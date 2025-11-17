@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block body %}
+<div class="card" style="
+    max-width:380px;
+    margin:40px auto;
+    box-shadow: 0 10px 32px rgba(56,112,255,.11);
+    border-radius: 20px;
+    padding: 38px 30px 28px 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    ">
+  <div style="background: linear-gradient(90deg,#3b82f6 40%,#67e8f9 100%); border-radius:50%; width:62px; height:62px; display:flex;align-items:center;justify-content:center;margin-bottom:18px;">
+    <span style="font-size:30px; color:#fff;">🔑</span>
+  </div>
+  <h2 style="margin-top:0; font-size:2rem; margin-bottom:18px; letter-spacing:.01em; font-weight:800; color:#1e293b;">Admin Login</h2>
+  <form method="post" style="width:100%; display:flex; flex-direction:column; gap:15px;">
+    <label for="password" style="color:var(--muted);font-size:15px;letter-spacing:.01em;margin-bottom:1px;">Password</label>
+    <input id="password" name="password" type="password" placeholder="Enter your admin password"
+      style="padding:13px 14px;font-size:15px;border-radius:10px;border:1.5px solid #e0e7ef;background:#f8fafc;color:#1e293b;margin-bottom:8px;">
+    <button type="submit" style="
+      background:linear-gradient(90deg,#2563eb,#38bdf8);
+      color:#fff;font-weight:700;
+      font-size:1.12rem;letter-spacing:.01em;
+      border-radius:10px; 
+      border:none;
+      padding:13px 0;
+      margin-top:5px;
+      box-shadow:0 2px 9px rgba(59,130,246,0.09);
+      transition:background .16s;">
+      <span style="letter-spacing:.01em;">Login</span>
+    </button>
+  </form>
+  <div style="color:#64748b; font-size:14px; margin-top:24px; text-align:center;">
+    <span>Access to admin panel is restricted.<br>Please enter your password.</span>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block body %}
+<div class="card" style="box-shadow:0 8px 24px rgba(56,112,255,0.08);border-radius:18px;">
+  <div style="display:flex; align-items:center; justify-content:space-between;">
+    <h2 style="margin-bottom:0;">👥 Users</h2>
+    <span style="color:var(--muted);font-size:18px;font-weight:500;">Total: {{ users|length }}</span>
+  </div>
+  <div class="table-wrapper" style="margin-top:15px;">
+    <table>
+      <thead>
+        <tr style="background: #f0f4ff;">
+          <th>#ID</th>
+          <th>Telegram ID</th>
+          <th>Username</th>
+          <th><span title="Number of free API calls">🆓 Free</span></th>
+          <th><span title="Number of paid calls">💳 Paid</span></th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for u in users %}
+        <tr style="transition:background 0.2s;">
+          <td style="font-weight:600;">{{ u.id }}</td>
+          <td style="font-family:monospace;">{{ u.telegram_id }}</td>
+          <td>
+            {% if u.username %}
+              <span style="color:#2563eb;font-weight:600;">
+                @{{ u.username }}
+              </span>
+            {% else %}
+              <span style="color:var(--muted);font-style:italic;">–</span>
+            {% endif %}
+          </td>
+          <td>
+            <span style="background:#e0f2fe;color:#2563eb;padding:3px 10px;border-radius:8px;font-weight:600;font-size:13px;">
+              {{ u.free_calls }}
+            </span>
+          </td>
+          <td>
+            <span style="background:#e0ffe7;color:#059669;padding:3px 10px;border-radius:8px;font-weight:600;font-size:13px;">
+              {{ u.paid_calls }}
+            </span>
+          </td>
+          <td>
+            <a href="{{ url_for('user_detail', user_id=u.id) }}" style="
+              display:inline-block;
+              text-decoration:none;
+              background:var(--primary);
+              color:#fff;
+              border-radius:8px;
+              padding:6px 16px;
+              transition:background .15s;
+              font-size:14px;
+              font-weight:600;
+              box-shadow:0 2px 7px rgba(59,130,246,0.06);
+              letter-spacing:0.02em;
+            " onmouseover="this.style.background='#2563eb';" onmouseout="this.style.background='var(--primary)';">
+              View &rarr;
+            </a>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

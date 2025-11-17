@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+{% block body %}
+<div class="card" style="box-shadow:0 8px 24px rgba(56,112,255,0.08);border-radius:18px;">
+  <div style="display:flex; align-items:center; justify-content:space-between;">
+    <h2 style="margin-bottom:0;">🛠️ Services</h2>
+    <span style="color:var(--muted);font-size:18px;font-weight:500;">Total: {{ services|length }}</span>
+  </div>
+  <form id="add-service-form"
+    style="display:flex; flex-wrap:wrap; gap:16px; align-items:flex-end; background:#f0f4ff;padding:22px 14px 10px 18px;border-radius:12px;margin:24px 0 20px 0;">
+    <div style="display:flex;flex-direction:column;">
+      <label style="color:var(--muted);font-size:13px;margin-bottom:4px;">Code</label>
+      <input name="code" placeholder="e.g. apple_basic" style="min-width:120px;" required>
+    </div>
+    <div style="display:flex;flex-direction:column;">
+      <label style="color:var(--muted);font-size:13px;margin-bottom:4px;">Name</label>
+      <input name="name" placeholder="Service Name" style="min-width:150px;" required>
+    </div>
+    <div style="display:flex;flex-direction:column;flex:1;">
+      <label style="color:var(--muted);font-size:13px;margin-bottom:4px;">API URL</label>
+      <input name="api_url" placeholder="https://api.example.com/endpoint" style="width:100%;" required>
+    </div>
+    <div style="display:flex;flex-direction:column;">
+      <label style="color:var(--muted);font-size:13px;margin-bottom:4px;">Description</label>
+      <input name="description" placeholder="Description" style="min-width:140px;">
+    </div>
+    <div style="display:flex;flex-direction:column;">
+      <label style="color:var(--muted);font-size:13px;margin-bottom:4px;">Group</label>
+      <input name="group" placeholder="Service Group" style="min-width:100px;">
+    </div>
+    <div style="display:flex;flex-direction:column;">
+      <label style="color:var(--muted);font-size:13px;margin-bottom:4px;">Is Public</label>
+      <select name="is_public" style="min-width:85px;">
+        <option value="1" selected>Yes</option>
+        <option value="0">No</option>
+      </select>
+    </div>
+    <button id="add-service-btn" type="submit" style="margin-left:auto;min-width:95px;height:41px;box-shadow:0 2px 8px rgba(59,130,246,0.07);font-size:15px;font-weight:600;">＋ Add</button>
+  </form>
+  <div id="add-service-msg" style="margin-bottom:6px;font-size:16px;font-weight:500;color:#059669;padding-left:12px;"></div>
+  <div class="table-wrapper" style="margin-top:10px;">
+    <table>
+      <thead>
+        <tr style="background: #f0f4ff;">
+          <th style="font-size:15px;">ID</th>
+          <th style="font-size:15px;">Code</th>
+          <th style="font-size:15px;">Name</th>
+          <th style="font-size:15px;">API URL</th>
+          <th style="font-size:15px;">Description</th>
+          <th style="font-size:15px;">Group</th>
+          <th style="font-size:15px;">Is Public</th>
+          <th style="font-size:15px;">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for s in services %}
+        <tr style="transition:background 0.2s;">
+          <td style="font-family:monospace;color:#64748b;font-weight:600;">{{ s.id }}</td>
+          <td style="font-family:monospace;color:#2563eb;font-weight:600;">{{ s.code }}</td>
+          <td style="font-weight:500;">{{ s.name }}</td>
+          <td>
+            <span style="font-size:13px;color:#64748b;background:#f3f4f6;padding:4px 10px;border-radius:7px;word-break:break-all;">
+              {{ s.api_url }}
+            </span>
+          </td>
+          <td style="max-width:280px;font-size:14px;color:#334155;">{{ s.description or "–" }}</td>
+          <td>
+            <span style="background:#e0f2fe;color:#2563eb;padding:3px 10px;border-radius:8px;font-size:13px;">{{ s.group }}</span>
+          </td>
+          <td>
+            {% if s.is_public %}
+              <span style="background:#dbf7fb;color:#059669;padding:3px 13px;border-radius:7px;font-size:14px;font-weight:600;">Yes</span>
+            {% else %}
+              <span style="background:#fef2f2;color:#be123c;padding:3px 13px;border-radius:7px;font-size:14px;font-weight:600;">No</span>
+            {% endif %}
+          </td>
+          <td>
+            <form method="post" action="{{ url_for('services') }}?delete_id={{ s.id }}" style="display:inline;">
+              <button type="submit" onclick="return confirm('Delete this service?')" title="Delete Service"
+                style="background:#fef2f2;color:#ef4444;border:none;padding:6px 14px;border-radius:7px;font-weight:600;font-size:14px;cursor:pointer;">
+                Delete
+              </button>
+              <input type="hidden" name="delete_id" value="{{ s.id }}">
+            </form>
+          </td>
+        </tr>
+      {% else %}
+        <tr>
+          <td colspan="8" style="text-align:center;color:var(--muted);font-style:italic;padding:28px 0;">No services found.</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  const form = document.getElementById("add-service-form");
+  const btn = document.getElementById("add-service-btn");
+  const msgDiv = document.getElementById("add-service-msg");
+
+  form.addEventListener("submit", async function(e) {
+    e.preventDefault();
+    btn.disabled = true;
+    msgDiv.textContent = "";
+
+    const formData = new FormData(form);
+    const data = {};
+    formData.forEach((v, k) => {
+      // convert is_public to boolean/integer for API
+      if (k === "is_public") {
+        data[k] = v == "1" ? true : false;
+      } else {
+        data[k] = v;
+      }
+    });
+
+    try {
+      // You might want to adjust the endpoint URL depending on deployment
+      let resp = await fetch("/api/add_service", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(data)
+      });
+      let result = await resp.json();
+      if (resp.ok && result.success) {
+        msgDiv.style.color = "#059669";
+        msgDiv.textContent = "Service added successfully!";
+        setTimeout(() => window.location.reload(), 1000);
+      } else {
+        msgDiv.style.color = "#be123c";
+        msgDiv.textContent = result.error || "Failed to add. Please check fields.";
+      }
+    } catch (err) {
+      msgDiv.style.color = "#be123c";
+      msgDiv.textContent = "Could not connect to API server.";
+    }
+    btn.disabled = false;
+  });
+});
+</script>
+{% endblock %}

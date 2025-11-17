@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block body %}
+<div class="card" style="box-shadow:0 8px 24px rgba(56,112,255,0.08);border-radius:18px;">
+  <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap;">
+    <h2 style="margin-bottom:0;">💳 Payments</h2>
+    <span style="color:var(--muted);font-size:18px;font-weight:500;">Total: {{ payments|length }}</span>
+  </div>
+  <div class="table-wrapper" style="margin-top:18px;">
+    <table style="border-radius:16px;overflow:hidden;">
+      <thead>
+        <tr style="background: #f0f4ff;">
+          <th style="font-size:15px;">Date</th>
+          <th style="font-size:15px;">Amount</th>
+          <th style="font-size:15px;">Method</th>
+          <th style="font-size:15px;">Note</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in payments %}
+        <tr style="transition:background 0.22s;">
+          <td style="white-space:nowrap;font-family:monospace;color:#334155;">
+            {{ p.created_at.strftime('%Y-%m-%d %H:%M') if p.created_at else "" }}
+          </td>
+          <td>
+            <span style="background:#e0ffe7;color:#059669;padding:3px 12px;border-radius:9px;font-weight:600;font-size:15px;">
+              {{ '%.2f'|format(p.amount) }}
+            </span>
+          </td>
+          <td>
+            <span style="background:#f1f5f9;color:#2563eb;padding:4px 10px;border-radius:8px;font-size:14px;font-weight:500;">
+              {{ p.method }}
+            </span>
+          </td>
+          <td style="font-size:14px;max-width:200px;white-space:pre-line;overflow-wrap:break-word;color:#64748b;">
+            {{ p.note or "&ndash;" }}
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="4" style="text-align:center;color:var(--muted);font-style:italic;padding:28px 0;">No payments found.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<style>
+@media (max-width: 750px) {
+  .table-wrapper table, .table-wrapper thead, .table-wrapper tbody, .table-wrapper th, .table-wrapper td, .table-wrapper tr {
+    display: block;
+    width: 100%;
+  }
+  .table-wrapper thead {
+    display: none;
+  }
+  .table-wrapper tr {
+    margin-bottom: 20px;
+    background: #f9f9fa;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(33,53,99,0.06);
+    padding: 8px 12px;
+    border: 1px solid #e5e7eb;
+  }
+  .table-wrapper td {
+    padding: 9px 8px 9px 42%;
+    position: relative;
+    min-height:36px;
+    border: none;
+    border-bottom: 1px solid #f1f5f9;
+    font-size:16px;
+  }
+  .table-wrapper td:before {
+    position: absolute;
+    left: 12px;
+    top: 9px;
+    width: 33%;
+    white-space: nowrap;
+    font-weight: 600;
+    color: #2563eb;
+    font-size: 14px;
+    content: attr(data-label);
+  }
+  .table-wrapper tr:last-child td {
+    border-bottom: none;
+  }
+}
+</style>
+<script>
+(function() {
+  // Add data-label for mobile display
+  let ths = Array.from(document.querySelectorAll(".table-wrapper th")).map(th=>th.textContent.trim());
+  document.querySelectorAll(".table-wrapper tbody tr").forEach(tr=>{
+    tr.querySelectorAll("td").forEach((td, i)=>{
+      if(ths[i]) td.setAttribute("data-label", ths[i]);
+    });
+  });
+})();
+</script>
+{% endblock %}

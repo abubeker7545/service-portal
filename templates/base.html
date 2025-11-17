@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Panel</title>
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --card: #ffffff;
+      --primary: #3b82f6;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --radius: 12px;
+    }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    nav {
+      background: var(--card);
+      padding: 15px 20px;
+      display: flex;
+      gap: 20px;
+      border-bottom: 1px solid #e5e7eb;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    nav a {
+      text-decoration: none;
+      color: var(--text);
+      font-weight: 600;
+    }
+    nav a:hover {
+      color: var(--primary);
+    }
+    .container {
+      max-width: 1100px;
+      margin: 30px auto;
+      padding: 0 15px;
+    }
+    .card {
+      background: var(--card);
+      padding: 20px;
+      border-radius: var(--radius);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      margin-bottom: 25px;
+    }
+    h2, h3 {
+      margin-top: 0;
+    }
+    input, button {
+      padding: 10px 12px;
+      border-radius: var(--radius);
+      border: 1px solid #d1d5db;
+      font-size: 14px;
+    }
+    button {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #2563eb;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    table th, table td {
+      padding: 12px;
+      border-bottom: 1px solid #e5e7eb;
+      text-align: left;
+    }
+    table tr:hover {
+      background: #f0f4ff;
+    }
+    .flash {
+      padding: 12px;
+      border-radius: var(--radius);
+      margin-bottom: 15px;
+    }
+    .flash.success { background: #d1fae5; }
+    .flash.error { background: #fee2e2; }
+      /* Improved modern styling */
+    * {
+      transition: 0.2s ease;
+    }
+    body.dark {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+      --primary: #3b82f6;
+    }
+    .topbar-toggle {
+      margin-left:auto;
+      cursor:pointer;
+      padding:8px 14px;
+      border-radius:var(--radius);
+      background:var(--primary);
+      color:#fff;
+      font-size:14px;
+      border:none;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    input:focus,button:focus {
+      outline:2px solid var(--primary);
+      outline-offset:2px;
+    }
+
+    nav a.active {
+      color:var(--primary);
+      border-bottom:2px solid var(--primary);
+      padding-bottom:4px;
+    }
+
+    .table-wrapper{
+      overflow-x:auto;
+      background:var(--card);
+      border-radius:var(--radius);
+      padding:10px;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="{{ url_for('users') }}">Users</a>
+    <a href="{{ url_for('services') }}">Services</a>
+    <a href="{{ url_for('payments') }}">Payments</a>
+    <a href="{{ url_for('logout') }}">Logout</a>
+    <button class="topbar-toggle" onclick="toggleTheme()">Toggle Theme</button>
+  </nav>
+
+  <div class="container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for cat,msg in messages %}<div class="flash {{cat}}">{{msg}}</div>{% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    {% block body %}{% endblock %}
+  </div>
+<script>
+  function toggleTheme(){
+    document.body.classList.toggle('dark');
+    localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
+  }
+  if(localStorage.getItem('theme') === 'dark'){
+    document.body.classList.add('dark');
+  }
+</script>
+</body>
+</html>
