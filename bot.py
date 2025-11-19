@@ -16,10 +16,13 @@ STATE = {}  # per-user temporary state
 
 
 # ---------- API HELPERS ---------- #
-def api_get_user(user_id):
+def api_get_user(user_id, username=None):
     """Fetch user info from Flask API with safe error handling."""
     try:
-        r = requests.get(f"{API_URL}/user/{user_id}", timeout=5)
+        url = f"{API_URL}/user/{user_id}"
+        if username:
+            url = f"{url}?username={username}"
+        r = requests.get(url, timeout=5)
         r.raise_for_status()
         return r.json()
     except Exception as e:
@@ -29,7 +32,7 @@ def api_get_user(user_id):
 
 def api_get_services():
     try:
-        r = requests.get(f"{API_URL}/services", timeout=5)
+        r = requests.get(f"{API_URL}/services/grouped", timeout=5)
         r.raise_for_status()
         return r.json()
     except Exception as e:
@@ -37,11 +40,14 @@ def api_get_services():
         return {}
 
 
-def api_lookup(service, imei, user_id):
+def api_lookup(service, imei, user_id, username=None):
     try:
+        payload = {"user_id": user_id, "service": service, "imei": imei}
+        if username:
+            payload["username"] = username
         r = requests.post(
             f"{API_URL}/lookup",
-            json={"user_id": user_id, "service": service, "imei": imei},
+            json=payload,
             timeout=10
         )
         r.raise_for_status()
@@ -85,7 +91,7 @@ async def menu_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     # ACCOUNT
     if data == "account":
-        user = api_get_user(user_id)
+        user = api_get_user(user_id, query.from_user.username)
         msg = f"👤 **Account Info**\nFree Calls: {user.get('free_calls',0)}\nPaid Calls: {user.get('paid_calls',0)}"
         buttons = [[InlineKeyboardButton("⬅ Back", callback_data="back_main")]]
         await query.edit_message_text(msg, reply_markup=InlineKeyboardMarkup(buttons))
@@ -109,15 +115,35 @@ async def menu_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     # SERVICE GROUP
+    # SERVICE GROUP
     if data.startswith("group_"):
         group_name = data.replace("group_", "")
         all_services = api_get_services()
+
         if group_name not in all_services:
             await query.edit_message_text(f"No services in group {group_name}")
             return
-        buttons = [[InlineKeyboardButton(svc["name"], callback_data=f"svc_{svc['code']}")] for svc in all_services[group_name]]
+
+        services = all_services[group_name]
+
+        # --- BUILD 2 BUTTONS PER ROW ---
+        buttons = []
+        row = []
+        for svc in services:
+            row.append(InlineKeyboardButton(svc["name"], callback_data=f"svc_{svc['code']}"))
+            if len(row) == 2:        # when row is full → push it
+                buttons.append(row)
+                row = []
+        if row:                      # remaining button (odd count)
+            buttons.append(row)
+
+        # BACK BUTTON
         buttons.append([InlineKeyboardButton("⬅ Back", callback_data="back_services")])
-        await query.edit_message_text(f"Services in *{group_name}*:", reply_markup=InlineKeyboardMarkup(buttons))
+
+        await query.edit_message_text(
+            f"Services in *{group_name}*:",
+            reply_markup=InlineKeyboardMarkup(buttons)
+        )
         return
 
     # SERVICE SELECTED → ask IMEI
@@ -145,7 +171,8 @@ async def receive_imei(update: Update, context: ContextTypes.DEFAULT_TYPE):
     imei = update.message.text.strip()
     service = STATE[user_id]["service"]
 
-    result = api_lookup(service, imei, user_id)
+    username = update.effective_user.username if update.effective_user else None
+    result = api_lookup(service, imei, user_id, username=username)
     await update.message.reply_text(f"📡 Result:\n{result}")
 
     # Clear user state

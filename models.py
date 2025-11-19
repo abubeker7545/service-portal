@@ -28,6 +28,8 @@ class Service(Base):
     name = Column(String(255))
     description = Column(Text, default="")
     api_url = Column(String(1024))  # backend URL to call for this service (you manage)
+    # optional API key to be used when calling the provider for this service
+    api_key = Column(String(256), nullable=True)
     is_public = Column(Boolean, default=True)
     group = Column(String(128), default="General")
 

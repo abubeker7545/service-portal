@@ -1,0 +1,5 @@
+{
+  "name": "Admin Nexus",
+  "description": "A modern, responsive admin dashboard for managing users, services, devices, and payments.",
+  "requestFramePermissions": []
+}
