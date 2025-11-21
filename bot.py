@@ -14,7 +14,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-API_URL = os.getenv("API_URL", "http://127.0.0.1:5000/api")
+API_URL = os.getenv("API_URL", "https://serviceapi.shegergsm.com/api")
 BOT_TOKEN = os.getenv("BOT_TOKEN", "6806239673:AAESKUzLKgyOWl0-atsgsA-diSYrkhmRO9I")
 
 STATE = {}  # per-user temporary state
