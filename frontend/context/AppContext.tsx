@@ -164,7 +164,13 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     // persist payment to backend then update local list
     api.createPayment(payment as Partial<Payment>)
       .then((res) => {
-        const created = res && (res as any).payment ? (res as any).payment as Payment : payment;
+        // Normalize backend-created payment IDs (may be numeric) to strings
+        const createdRaw = res && (res as any).payment ? (res as any).payment as any : payment as any;
+        const created: Payment = {
+          ...createdRaw,
+          id: createdRaw.id !== undefined ? String(createdRaw.id) : String(`p${Date.now()}`),
+          user_id: createdRaw.user_id !== undefined && createdRaw.user_id !== null ? String(createdRaw.user_id) : createdRaw.user_id,
+        } as Payment;
         setPayments(prev => [created, ...prev]);
       })
       .catch((err) => {

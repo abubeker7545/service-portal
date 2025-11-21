@@ -806,25 +806,60 @@ def api_lookup_flask():
     service_result = None
     error_msg = None
 
-    # Build provider URL
-    # Example final URL:
-    #   https://imeicheck.net/api/apple/fmi?apikey=KEY&imei=12345
-    params = {}
+    # ----------------------------
+    # CALL REAL IMEI PROVIDER API
+    # ----------------------------
+    success = False
+    service_result = None
+    error_msg = None
+
+    # Prepare payload and headers
+    params = {"imei": imei}
+    headers = {
+        "User-Agent": "TGService/1.0",
+        "Accept": "application/json"
+    }
 
     if svc.api_key:
         params["apikey"] = svc.api_key
-
-    params["imei"] = imei
+        params["key"] = svc.api_key
+        params["token"] = svc.api_key
+        headers["Authorization"] = f"Bearer {svc.api_key}"
+        headers["key"] = svc.api_key
 
     try:
-        response = requests.get(svc.api_url, params=params, timeout=15)
+        # Default to POST for known services or if explicitly needed
+        # Since we don't have a method field, we'll try to infer or default to POST for these providers
+        if "imei.info" in svc.api_url or "imeicheck.net" in svc.api_url:
+             response = requests.post(svc.api_url, json=params, headers=headers, timeout=30)
+        else:
+             # Default to GET for others
+             response = requests.get(svc.api_url, params=params, headers=headers, timeout=30)
+        
+        # Check if we got a valid response
+        if response.status_code == 405: # Method Not Allowed -> Try the other one
+             if "imei.info" in svc.api_url or "imeicheck.net" in svc.api_url:
+                 response = requests.get(svc.api_url, params=params, headers=headers, timeout=30)
+             else:
+                 response = requests.post(svc.api_url, json=params, headers=headers, timeout=30)
+
         response.raise_for_status()
 
         try:
             service_result = response.json()
             success = True
+            
+            # Check for common API error fields in 200 OK responses
+            if isinstance(service_result, dict):
+                if "error" in service_result and service_result["error"]:
+                    success = False
+                    error_msg = str(service_result["error"])
+                elif "status" in service_result and service_result["status"] == "failed":
+                    success = False
+                    error_msg = service_result.get("message", "Unknown error")
+
         except ValueError:
-            error_msg = "Provider returned invalid JSON"
+            error_msg = "Provider returned invalid JSON: " + response.text[:100]
     except requests.exceptions.RequestException as e:
         error_msg = f"Provider API call failed: {str(e)}"
 

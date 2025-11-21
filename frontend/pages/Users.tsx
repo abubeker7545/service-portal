@@ -222,36 +222,57 @@ export const UsersPage: React.FC = () => {
       <Modal
         isOpen={isDetailOpen}
         onClose={() => setIsDetailOpen(false)}
-        title={`User: ${selectedUser?.username}`}
+        title={''}
         maxWidth="max-w-3xl"
       >
         {selectedUser && (
           <div className="space-y-4">
-             <div className="flex space-x-4 border-b border-slate-200">
-                <button 
-                  onClick={() => setActiveTab('devices')}
-                  className={`pb-2 text-sm font-medium border-b-2 transition-colors ${activeTab === 'devices' ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-slate-500 hover:text-slate-700'}`}
-                >
-                  Devices
-                </button>
-                <button 
-                  onClick={() => setActiveTab('usage')}
-                  className={`pb-2 text-sm font-medium border-b-2 transition-colors ${activeTab === 'usage' ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-slate-500 hover:text-slate-700'}`}
-                >
-                  API Usage
-                </button>
-                <button 
-                  onClick={() => setActiveTab('payments')}
-                  className={`pb-2 text-sm font-medium border-b-2 transition-colors ${activeTab === 'payments' ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-slate-500 hover:text-slate-700'}`}
-                >
-                  Payments
-                </button>
-             </div>
-             <div className="min-h-[200px]">
-               {activeTab === 'devices' && <UserDevices userId={selectedUser.id} />}
-               {activeTab === 'usage' && <UserUsage userId={selectedUser.id} />}
-               {activeTab === 'payments' && <UserPayments userId={selectedUser.id} />}
-             </div>
+            {/* Header */}
+            <div className="flex items-center justify-between gap-4 pb-4 border-b border-slate-200">
+              <div className="flex items-center gap-4">
+                <div className="w-16 h-16 bg-indigo-100 text-indigo-700 rounded-full flex items-center justify-center text-xl font-semibold">{(selectedUser.username || 'U').charAt(0).toUpperCase()}</div>
+                <div>
+                  <div className="text-lg font-bold text-slate-900">{selectedUser.username}</div>
+                  <div className="text-sm text-slate-500">Telegram ID: {selectedUser.telegram_id}</div>
+                  <div className="mt-2">
+                    <span className={`inline-block px-2 py-1 text-xs rounded ${selectedUser.registered ? 'bg-blue-100 text-blue-700' : 'bg-slate-100 text-slate-600'}`}>{selectedUser.registered ? 'Registered' : 'Guest'}</span>
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="text-center">
+                  <div className="text-xs text-slate-500">Free</div>
+                  <div className="font-semibold text-slate-900">{selectedUser.free_calls}</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-xs text-slate-500">Paid</div>
+                  <div className="font-semibold text-indigo-600">{selectedUser.paid_calls}</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-xs text-slate-500">Devices</div>
+                  <div className="font-semibold text-slate-900">{devices.filter(d => d.user_id === selectedUser.id).length}</div>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <button onClick={() => { setIsDetailOpen(false); handleEditUser(selectedUser); }} className="px-3 py-2 bg-amber-50 text-amber-700 rounded-md text-sm">Edit</button>
+                  <button onClick={() => handleDeleteUser(selectedUser.id)} className="px-3 py-2 bg-red-50 text-red-600 rounded-md text-sm">Delete</button>
+                </div>
+              </div>
+            </div>
+
+            {/* Tabs */}
+            <div className="flex items-center gap-3">
+              <button onClick={() => setActiveTab('devices')} className={`px-3 py-2 rounded-md text-sm ${activeTab === 'devices' ? 'bg-indigo-600 text-white' : 'bg-slate-50 text-slate-700 hover:bg-slate-100'}`}>Devices</button>
+              <button onClick={() => setActiveTab('usage')} className={`px-3 py-2 rounded-md text-sm ${activeTab === 'usage' ? 'bg-indigo-600 text-white' : 'bg-slate-50 text-slate-700 hover:bg-slate-100'}`}>API Usage</button>
+              <button onClick={() => setActiveTab('payments')} className={`px-3 py-2 rounded-md text-sm ${activeTab === 'payments' ? 'bg-indigo-600 text-white' : 'bg-slate-50 text-slate-700 hover:bg-slate-100'}`}>Payments</button>
+            </div>
+
+            <div className="mt-4">
+              <div className="bg-white border border-slate-100 rounded-lg p-4">
+                {activeTab === 'devices' && <UserDevices userId={selectedUser.id} />}
+                {activeTab === 'usage' && <UserUsage userId={selectedUser.id} />}
+                {activeTab === 'payments' && <UserPayments userId={selectedUser.id} />}
+              </div>
+            </div>
           </div>
         )}
       </Modal>

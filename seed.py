@@ -296,7 +296,7 @@ def seed_services():
             "code": "xiaomi_blacklist",
             "name": "Xiaomi Blacklist",
             "description": "Lost/Stolen",
-            "api_url": "httpsimeicheck.net/api/xiaomi/blacklist",
+            "api_url": "https://imeicheck.net/api/xiaomi/blacklist",
             "api_key": DEFAULT_API_KEY
         },
 
