@@ -3,7 +3,7 @@ import { Service, User, APIUsage, Payment, DeviceRecord } from '../types';
 
 // Vite exposes env on import.meta.env; cast to any to avoid TS issues in this workspace.
 // Default to the local Flask dev server if VITE_API_URL is not set.
-const API_BASE = ((import.meta as any).env && (import.meta as any).env.VITE_API_URL) || 'http://127.0.0.1:5000';
+const API_BASE = ((import.meta as any).env && (import.meta as any).env.VITE_API_URL) || 'https://serviceapi.shegergsm.com';
 
 async function handleResponse(res: Response) {
   const text = await res.text();
@@ -214,5 +214,5 @@ export default {
   deleteUser,
   getUser,
   lookup
-  ,adminLogin, adminLogout
+  , adminLogin, adminLogout
 };

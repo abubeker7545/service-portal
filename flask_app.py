@@ -10,7 +10,8 @@ from datetime import datetime
 
 load_dotenv()
 
-DATABASE_URL = os.environ.get("DATABASE_URL", "sqlite:///./bot.db")
+basedir = os.path.abspath(os.path.dirname(__file__))
+DATABASE_URL = os.environ.get("DATABASE_URL", f"sqlite:///{os.path.join(basedir, 'bot.db')}")
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "password")
 FLASK_SECRET = os.environ.get("FLASK_SECRET", "secret-key")
 

@@ -9,8 +9,13 @@ from telegram.ext import (
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-API_URL = "http://127.0.0.1:5000/api"  # Flask API
-BOT_TOKEN = "6806239673:AAESKUzLKgyOWl0-atsgsA-diSYrkhmRO9I"
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+API_URL = os.getenv("API_URL", "http://127.0.0.1:5000/api")
+BOT_TOKEN = os.getenv("BOT_TOKEN", "6806239673:AAESKUzLKgyOWl0-atsgsA-diSYrkhmRO9I")
 
 STATE = {}  # per-user temporary state
 
