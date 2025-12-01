@@ -1,6 +1,7 @@
 python-telegram-bot==21.6
 requests==2.32.3
 python-dotenv==1.0.0
-SQLAlchemy==2.0.22
+# Use a newer SQLAlchemy release that includes typing/typing_extensions fixes
+SQLAlchemy>=2.0.28,<3
 Flask==2.2.5
 bcrypt==4.0.1

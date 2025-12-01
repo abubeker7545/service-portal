@@ -9,6 +9,11 @@ import { DevicesPage } from './pages/Devices';
 import { UsagePage } from './pages/Usage';
 import { PaymentsPage } from './pages/Payments';
 import { Login } from './pages/Login';
+import { PortalLogin } from './pages/portal/PortalLogin';
+import { PortalLayout } from './pages/portal/PortalLayout';
+import { PortalDashboard } from './pages/portal/PortalDashboard';
+import { PortalRequest } from './pages/portal/PortalRequest';
+import { PortalHistory } from './pages/portal/PortalHistory';
 import { AppProvider, useApp } from './context/AppContext';
 
 // Component to handle routing logic based on auth state
@@ -17,13 +22,30 @@ const AppRoutes = () => {
 
   return (
     <Routes>
-      <Route 
-        path="/login" 
-        element={isAuthenticated ? <Navigate to="/" replace /> : <Login />} 
+      {/* Portal Routes */}
+      <Route path="/portal/login" element={<PortalLogin />} />
+      <Route
+        path="/portal/*"
+        element={
+          <PortalLayout>
+            <Routes>
+              <Route path="/" element={<PortalDashboard />} />
+              <Route path="/request" element={<PortalRequest />} />
+              <Route path="/history" element={<PortalHistory />} />
+              <Route path="*" element={<Navigate to="/portal" replace />} />
+            </Routes>
+          </PortalLayout>
+        }
       />
-      
-      <Route 
-        path="/*" 
+
+      {/* Admin Routes */}
+      <Route
+        path="/login"
+        element={isAuthenticated ? <Navigate to="/" replace /> : <Login />}
+      />
+
+      <Route
+        path="/*"
         element={
           isAuthenticated ? (
             <Layout>
@@ -40,7 +62,7 @@ const AppRoutes = () => {
           ) : (
             <Navigate to="/login" replace />
           )
-        } 
+        }
       />
     </Routes>
   );
