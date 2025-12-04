@@ -1,15 +1,15 @@
 
 import React, { useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { 
-  LayoutDashboard, 
-  Users, 
-  Server, 
-  Smartphone, 
-  Activity, 
-  CreditCard, 
-  Menu, 
-  X, 
+import {
+  LayoutDashboard,
+  Users,
+  Server,
+  Smartphone,
+  Activity,
+  CreditCard,
+  Menu,
+  X,
   Search,
   Bell,
   User as UserIcon,
@@ -19,12 +19,12 @@ import { NavItem } from '../types';
 import { useApp } from '../context/AppContext';
 
 const NAV_ITEMS: NavItem[] = [
-  { label: 'Dashboard', path: '/', icon: LayoutDashboard },
-  { label: 'Users', path: '/users', icon: Users },
-  { label: 'Services', path: '/services', icon: Server },
-  { label: 'Devices', path: '/devices', icon: Smartphone },
-  { label: 'API Usage', path: '/usage', icon: Activity },
-  { label: 'Payments', path: '/payments', icon: CreditCard },
+  { label: 'Dashboard', path: '/admin', icon: LayoutDashboard },
+  { label: 'Users', path: '/admin/users', icon: Users },
+  { label: 'Services', path: '/admin/services', icon: Server },
+  { label: 'Devices', path: '/admin/devices', icon: Smartphone },
+  { label: 'API Usage', path: '/admin/usage', icon: Activity },
+  { label: 'Payments', path: '/admin/payments', icon: CreditCard },
 ];
 
 export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -35,7 +35,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
   return (
     <div className="flex h-screen bg-slate-50 overflow-hidden">
       {/* Sidebar */}
-      <aside 
+      <aside
         className={`
           fixed inset-y-0 left-0 z-50 w-64 bg-slate-900 text-white transition-transform duration-300 ease-in-out
           ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
@@ -49,7 +49,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
             </div>
             <span className="text-xl font-bold tracking-tight">Admin Nexus</span>
           </div>
-          <button 
+          <button
             onClick={() => setIsSidebarOpen(false)}
             className="lg:hidden p-1 hover:bg-slate-800 rounded"
           >
@@ -67,8 +67,8 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                 onClick={() => setIsSidebarOpen(false)}
                 className={`
                   flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors
-                  ${isActive 
-                    ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-900/20' 
+                  ${isActive
+                    ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-900/20'
                     : 'text-slate-400 hover:bg-slate-800 hover:text-white'}
                 `}
               >
@@ -90,9 +90,9 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                 <p className="text-xs">Online</p>
               </div>
             </div>
-            <button 
+            <button
               onClick={logout}
-              className="p-2 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-white transition-colors" 
+              className="p-2 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-white transition-colors"
               title="Sign Out"
             >
               <LogOut size={18} />
@@ -105,7 +105,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
       <div className="flex-1 flex flex-col h-full overflow-hidden">
         {/* Header */}
         <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 lg:px-8">
-          <button 
+          <button
             onClick={() => setIsSidebarOpen(true)}
             className="lg:hidden p-2 text-slate-600 hover:bg-slate-100 rounded-lg"
           >
@@ -114,9 +114,9 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
 
           <div className="hidden md:flex items-center relative w-96">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-            <input 
-              type="text" 
-              placeholder="Search everywhere..." 
+            <input
+              type="text"
+              placeholder="Search everywhere..."
               className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
             />
           </div>
@@ -136,10 +136,10 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
           </div>
         </main>
       </div>
-      
+
       {/* Overlay for mobile sidebar */}
       {isSidebarOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/50 z-40 lg:hidden"
           onClick={() => setIsSidebarOpen(false)}
         ></div>

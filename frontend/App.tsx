@@ -14,6 +14,7 @@ import { PortalLayout } from './pages/portal/PortalLayout';
 import { PortalDashboard } from './pages/portal/PortalDashboard';
 import { PortalRequest } from './pages/portal/PortalRequest';
 import { PortalHistory } from './pages/portal/PortalHistory';
+import { Landing } from './pages/Landing';
 import { AppProvider, useApp } from './context/AppContext';
 
 // Component to handle routing logic based on auth state
@@ -22,6 +23,9 @@ const AppRoutes = () => {
 
   return (
     <Routes>
+      {/* Public Landing */}
+      <Route path="/" element={<Landing />} />
+
       {/* Portal Routes */}
       <Route path="/portal/login" element={<PortalLogin />} />
       <Route
@@ -40,12 +44,12 @@ const AppRoutes = () => {
 
       {/* Admin Routes */}
       <Route
-        path="/login"
-        element={isAuthenticated ? <Navigate to="/" replace /> : <Login />}
+        path="/admin/login"
+        element={isAuthenticated ? <Navigate to="/admin" replace /> : <Login />}
       />
 
       <Route
-        path="/*"
+        path="/admin/*"
         element={
           isAuthenticated ? (
             <Layout>
@@ -56,14 +60,17 @@ const AppRoutes = () => {
                 <Route path="/devices" element={<DevicesPage />} />
                 <Route path="/usage" element={<UsagePage />} />
                 <Route path="/payments" element={<PaymentsPage />} />
-                <Route path="*" element={<Navigate to="/" replace />} />
+                <Route path="*" element={<Navigate to="/admin" replace />} />
               </Routes>
             </Layout>
           ) : (
-            <Navigate to="/login" replace />
+            <Navigate to="/admin/login" replace />
           )
         }
       />
+
+      {/* Fallback */}
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 };
