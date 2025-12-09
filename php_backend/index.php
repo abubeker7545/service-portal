@@ -23,8 +23,9 @@ require_once 'db.php';
 
 
 // Configuration
-$admin_password = getenv('ADMIN_PASSWORD') ?: 'password';
-$flask_secret = getenv('FLASK_SECRET') ?: 'secret-key'; // Used for session equivalent if needed
+// Configuration
+$admin_password = defined('ADMIN_PASSWORD') ? ADMIN_PASSWORD : (getenv('ADMIN_PASSWORD') ?: 'password');
+$flask_secret = defined('FLASK_SECRET') ? FLASK_SECRET : (getenv('FLASK_SECRET') ?: 'secret-key');
 
 // simple session start for admin login state
 session_start();
@@ -79,7 +80,7 @@ try {
     
     // GET /api/services/grouped (for bot mainly)
     if ($uri === '/api/services/grouped' && $method === 'GET') {
-        $stmt = $pdo->query("SELECT * FROM services ORDER BY [group], name");
+        $stmt = $pdo->query("SELECT * FROM services ORDER BY `group`, name");
         $all = $stmt->fetchAll();
         $groups = [];
         foreach ($all as $svc) {
@@ -97,7 +98,7 @@ try {
 
     // GET /api/services
     if ($uri === '/api/services' && $method === 'GET') {
-        $stmt = $pdo->query("SELECT * FROM services ORDER BY [group], name");
+        $stmt = $pdo->query("SELECT * FROM services ORDER BY `group`, name");
         $services = $stmt->fetchAll();
         // Convert to logic expected by frontend (boolean casting etc)
         foreach ($services as &$s) {
@@ -130,7 +131,7 @@ try {
             exit;
         }
 
-        $sql = "INSERT INTO services (code, name, [group], api_url, description, api_key, is_public) 
+        $sql = "INSERT INTO services (code, name, `group`, api_url, description, api_key, is_public) 
                 VALUES (?, ?, ?, ?, ?, ?, ?)";
         $stmt = $pdo->prepare($sql);
         $stmt->execute([
@@ -177,7 +178,7 @@ try {
         $params = [];
         foreach ($fields as $f) {
             if (array_key_exists($f, $data)) {
-                $updates[] = "[$f] = ?"; // brackets for SQL keyword safety like 'group'
+                $updates[] = "`$f` = ?"; // backticks for SQL keyword safety like 'group'
                 $params[] = $data[$f];
             }
         }

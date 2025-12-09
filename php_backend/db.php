@@ -1,13 +1,18 @@
 <?php
 // db.php
+require_once 'config.php';
 
 function getDB() {
-    // Database path relative to this file. 
-    // Assuming bot.db is in the parent directory of php_backend
-    $dbPath = __DIR__ . '/../bot.db';
-    
     try {
-        $pdo = new PDO('sqlite:' . $dbPath);
+        if (defined('DB_DRIVER') && DB_DRIVER === 'mysql') {
+            $dsn = "mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=utf8mb4";
+            $pdo = new PDO($dsn, DB_USER, DB_PASS);
+        } else {
+            // Fallback to SQLite
+            $dbPath = defined('DB_SQLITE_PATH') ? DB_SQLITE_PATH : __DIR__ . '/../bot.db';
+            $pdo = new PDO('sqlite:' . $dbPath);
+        }
+        
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
         return $pdo;
@@ -18,4 +23,4 @@ function getDB() {
         exit;
     }
 }
-
+?>
